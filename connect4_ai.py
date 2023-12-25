@@ -4,11 +4,11 @@ import numpy as np
 
 
 def alpha_beta_decision(board, turn: int, ai_level, queue: Queue, max_player: bool):
-    resulting_move, _ = minimax(board, turn, ai_level, max_player)
+    resulting_move, _ = minimax(board, turn, ai_level, max_player, float('-inf'), float('inf'))
     queue.put(resulting_move)
 
 
-def minimax(board, turn: int, ai_level: int, max_player: bool) -> tuple[int, int]:
+def minimax(board, turn: int, ai_level: int, max_player: bool, alpha: float, beta: float) -> tuple[int | None, int]:
     current_player = 2 if turn % 2 == 0 else 1
     
     if ai_level == 1:
@@ -23,10 +23,14 @@ def minimax(board, turn: int, ai_level: int, max_player: bool) -> tuple[int, int
             updated_board = board.copy()
             updated_board.add_disk(move, current_player, update_display=False)
             
-            _, decision = minimax(updated_board, turn + 1, ai_level - 1, False)
+            _, decision = minimax(updated_board, turn + 1, ai_level - 1, False, alpha, beta)
             if decision > maximum:
                 maximum = decision
                 move_result = move
+            alpha = max(alpha, decision)
+            if beta <= alpha:
+                print("PRUNED")
+                break
         return move_result, maximum
     else:
         minimum = float('inf')
@@ -34,11 +38,16 @@ def minimax(board, turn: int, ai_level: int, max_player: bool) -> tuple[int, int
             updated_board = board.copy()
             updated_board.add_disk(move, current_player, update_display=False)
             
-            _, decision = minimax(updated_board, turn + 1, ai_level - 1, True)
+            _, decision = minimax(updated_board, turn + 1, ai_level - 1, True, alpha, beta)
             if minimum > decision:
                 minimum = decision
                 move_result = move
+            beta = min(beta, decision)
+            if beta <= alpha:
+                print("PRUNED")
+                break
         return move_result, minimum
+
 
 def evaluate(board, player_id: int):
     count = 0
