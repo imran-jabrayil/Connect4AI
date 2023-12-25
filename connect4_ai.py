@@ -29,7 +29,6 @@ def minimax(board, turn: int, ai_level: int, max_player: bool, alpha: float, bet
                 move_result = move
             alpha = max(alpha, decision)
             if beta <= alpha:
-                print("PRUNED")
                 break
         return move_result, maximum
     else:
@@ -44,7 +43,6 @@ def minimax(board, turn: int, ai_level: int, max_player: bool, alpha: float, bet
                 move_result = move
             beta = min(beta, decision)
             if beta <= alpha:
-                print("PRUNED")
                 break
         return move_result, minimum
 
